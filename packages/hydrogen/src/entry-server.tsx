@@ -118,10 +118,14 @@ export const renderHydrogen = (App: any) => {
     setLogger(hydrogenConfig.logger);
     const log = getLoggerWithContext(request);
 
+    const responseHeaders = new Headers(headers);
+    responseHeaders.set(
+      'Shopify-Storefront-Request-Group-ID',
+      request.ctx.requestGroupID
+    );
+
     const response = new HydrogenResponse(request.url, null, {
-      headers: headers || {
-        'Shopify-Storefront-Request-Group-ID': request.ctx.requestGroupID,
-      },
+      headers: responseHeaders,
     });
 
     if (request.cookies.get(FORM_REDIRECT_COOKIE)) {
