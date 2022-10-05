@@ -108,11 +108,20 @@ export const renderHydrogen = (App: any) => {
     request.ctx.hydrogenConfig = hydrogenConfig;
     request.ctx.buyerIpHeader = buyerIpHeader;
 
+    const platformRequestID = headers?.get('request-id');
+    if (platformRequestID) {
+      request.ctx.requestGroupID = platformRequestID;
+    } else {
+      request.ctx.requestGroupID = generateUUID();
+    }
+
     setLogger(hydrogenConfig.logger);
     const log = getLoggerWithContext(request);
 
     const response = new HydrogenResponse(request.url, null, {
-      headers: headers || {},
+      headers: headers || {
+        'Shopify-Storefront-Request-Group-ID': request.ctx.requestGroupID,
+      },
     });
 
     if (request.cookies.get(FORM_REDIRECT_COOKIE)) {
@@ -343,6 +352,17 @@ function assembleHtml({
   }
 
   return html;
+}
+
+/*
+ * Generate a UUID using crypto and fallback to Math.random if crypto is not available.
+ */
+function generateUUID() {
+  if (typeof crypto !== 'undefined' && !!crypto.randomUUID) {
+    return crypto.randomUUID();
+  } else {
+    return `weak-${Math.random().toString(16).substring(2)}`;
+  }
 }
 
 /**

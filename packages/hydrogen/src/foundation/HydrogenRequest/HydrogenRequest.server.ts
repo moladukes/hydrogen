@@ -81,6 +81,7 @@ export class HydrogenRequest extends Request {
     runtime?: RuntimeContext;
     scopes: Map<string, Record<string, any>>;
     localization?: LocalizationContextValue;
+    requestGroupID?: string;
     [key: string]: any;
     throttledRequests: Record<string, any>;
   };
